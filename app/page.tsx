@@ -62,7 +62,7 @@ export default function FuelCalculator() {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full mb-4">
             <Fuel className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Calculadora de Combustible</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Calculadora de Combustible para YARIS de Samoko</h1>
           <p className="text-gray-600 text-sm">Calcula cuántos kilómetros puedes recorrer</p>
         </div>
 
@@ -133,6 +133,7 @@ export default function FuelCalculator() {
         </Card>
 
         {/* Footer */}
+		<div className="text-center mt-6 text-xs text-gray-500">Hecho por Samoko jul 2025</div>
         <div className="text-center mt-6 text-xs text-gray-500">Calculadora de Combustible v1.0</div>
       </div>
     </div>
