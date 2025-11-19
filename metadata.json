@@ -1,0 +1,5 @@
+{
+  "name": "Combustible SamApp",
+  "description": "A smart fuel consumption calculator that uses GenAI to visualize your vehicle and simple algorithms to predict travel range based on fuel spend.",
+  "requestFramePermissions": []
+}

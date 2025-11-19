@@ -1,0 +1,28 @@
+
+{
+  "id": "combustible-samapp",
+  "short_name": "SamApp",
+  "name": "Combustible SamApp",
+  "description": "Calculadora inteligente de consumo de combustible con visualización de vehículo 360 generada por IA.",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/1554/1554048.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/1554/1554048.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": ".",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#0f172a",
+  "background_color": "#0f172a",
+  "orientation": "portrait",
+  "categories": ["utilities", "finance", "productivity"]
+}
