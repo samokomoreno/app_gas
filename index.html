@@ -8,12 +8,14 @@
     <!-- PWA Setup -->
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#0f172a" />
+    <!-- Fixed deprecated tag -->
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="SamApp" />
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1554/1554048.png" />
 
-    <!-- Tailwind CDN (Keeping this for simplicity as requested, though npm install is recommended for production) -->
+    <!-- Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -38,21 +40,12 @@
         background-color: #0f172a;
         color: #f8fafc;
         font-family: 'Inter', sans-serif;
-        overscroll-behavior-y: none; /* Prevents pull-to-refresh on mobile */
+        overscroll-behavior-y: none;
       }
-      .cursor-grab {
-        cursor: grab;
-      }
-      .cursor-grabbing {
-        cursor: grabbing;
-      }
-      /* Safe area padding for notched phones */
-      .safe-area-top {
-        padding-top: env(safe-area-inset-top);
-      }
-      .safe-area-bottom {
-        padding-bottom: env(safe-area-inset-bottom);
-      }
+      .cursor-grab { cursor: grab; }
+      .cursor-grabbing { cursor: grabbing; }
+      .safe-area-top { padding-top: env(safe-area-inset-top); }
+      .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom); }
     </style>
 <script type="importmap">
 {

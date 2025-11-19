@@ -10,8 +10,9 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     define: {
-      // This injects the API key from Vercel environment variables into the client code
-      'process.env.API_KEY': JSON.stringify(env.API_KEY)
+      // This injects the API key from Vercel environment variables into the client code.
+      // Added || "" to prevent syntax errors if the variable is undefined during build.
+      'process.env.API_KEY': JSON.stringify(env.API_KEY || "")
     },
     build: {
       outDir: 'dist',

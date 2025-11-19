@@ -1,7 +1,13 @@
 import { GoogleGenAI, Modality } from "@google/genai";
 
-// Initialize the client
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Helper to safely get the AI client only when needed
+const getAIClient = () => {
+  const apiKey = process.env.API_KEY;
+  if (!apiKey || apiKey.trim() === "") {
+    throw new Error("API Key faltante. Verifica la configuración en Vercel (Environment Variables).");
+  }
+  return new GoogleGenAI({ apiKey });
+};
 
 // Helper to delay execution
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -13,8 +19,8 @@ export const generateVehicleImage = async (
   year: string,
   color: string
 ): Promise<string> => {
-  // Fallback single image generation
   try {
+    const ai = getAIClient();
     const prompt = `Generate a high-quality, photorealistic studio image of a ${color} ${year} ${brand} ${model} ${type}, side profile view, isolated on a dark clean background. Professional automotive photography.`;
 
     const response = await ai.models.generateContent({
@@ -38,8 +44,9 @@ export const generateVehicleImage = async (
     }
 
     throw new Error("No image generated");
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error generating vehicle image:", error);
+    if (error.message.includes("API Key")) throw error;
     return "https://picsum.photos/800/600?grayscale&blur=2";
   }
 };
@@ -52,7 +59,6 @@ export const generateVehicle360 = async (
   color: string,
   onProgress?: (completed: number, total: number) => void
 ): Promise<string[]> => {
-  // 8 Angles for 360 view
   const angles = [
     "front view",
     "front-left side view",
@@ -68,9 +74,9 @@ export const generateVehicle360 = async (
   let completed = 0;
   const results: string[] = new Array(total).fill("");
 
-  // Helper to generate a single angle with retry logic
   const generateAngle = async (angleDescription: string, retries = 2): Promise<string> => {
     try {
+      const ai = getAIClient();
       const prompt = `Photorealistic studio photo of a ${color} ${year} ${brand} ${model} ${type}, ${angleDescription}, isolated on a simple dark gray background. Cinematic lighting, 4k. The car should be centered and fully visible.`;
       
       const response = await ai.models.generateContent({
@@ -89,9 +95,15 @@ export const generateVehicle360 = async (
         return `data:image/png;base64,${base64ImageBytes}`;
       }
       throw new Error(`Failed to generate ${angleDescription}`);
-    } catch (e) {
+    } catch (e: any) {
+      console.error(`Error on angle ${angleDescription}:`, e.message || e);
+      
+      // If it's an API Key or Quota error, fail fast so the user knows
+      if (e.message && (e.message.includes("API Key") || e.message.includes("403") || e.message.includes("400"))) {
+        throw e; 
+      }
+
       if (retries > 0) {
-        // Exponential backoff: 2s, 4s, etc.
         const waitTime = 2000 * (3 - retries); 
         await delay(waitTime);
         return generateAngle(angleDescription, retries - 1);
@@ -100,9 +112,7 @@ export const generateVehicle360 = async (
     }
   };
 
-  // Queue Processing with Concurrency Limit
-  // Limit concurrency to 3 to avoid API rate limits (429 errors) which cause generation failures
-  const CONCURRENCY = 3;
+  const CONCURRENCY = 2; // Lowered concurrency to be safer with free tier
   const queue = angles.map((angle, index) => ({ angle, index }));
 
   const worker = async () => {
@@ -114,7 +124,7 @@ export const generateVehicle360 = async (
         results[task.index] = await generateAngle(task.angle);
       } catch (e) {
         console.error(`Final error generating ${task.angle}:`, e);
-        // Fallback: Transparent placeholder to maintain array integrity without crashing
+        // Fallback to transparent pixel if generation fails but not due to auth
         results[task.index] = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
       } finally {
         completed++;
@@ -123,7 +133,6 @@ export const generateVehicle360 = async (
     }
   };
 
-  // Start workers
   await Promise.all(Array.from({ length: CONCURRENCY }, () => worker()));
 
   return results;
